@@ -378,30 +378,30 @@ pub const (
 	i16_type_idx           = 6
 	int_type_idx           = 7
 	i64_type_idx           = 8
-	byte_type_idx          = 9
-	u16_type_idx           = 10
-	u32_type_idx           = 11
-	u64_type_idx           = 12
-	f32_type_idx           = 13
-	f64_type_idx           = 14
-	char_type_idx          = 15
-	bool_type_idx          = 16
-	none_type_idx          = 17
-	string_type_idx        = 18
-	rune_type_idx          = 19
-	array_type_idx         = 20
-	map_type_idx           = 21
-	chan_type_idx          = 22
-	size_t_type_idx        = 23
-	any_type_idx           = 24
-	float_literal_type_idx = 25
-	int_literal_type_idx   = 26
-	thread_type_idx        = 27
-	error_type_idx         = 28
-	u8_type_idx            = 29
-	i128_type_idx          = 30
-	u128_type_idx          = 31
-	f128_type_idx          = 32
+	i128_type_idx          = 9
+	byte_type_idx          = 10
+	u16_type_idx           = 11
+	u32_type_idx           = 12
+	u64_type_idx           = 13
+	u128_type_idx          = 14
+	f32_type_idx           = 15
+	f64_type_idx           = 16
+	f128_type_idx          = 17
+	char_type_idx          = 18
+	bool_type_idx          = 19
+	none_type_idx          = 20
+	string_type_idx        = 21
+	rune_type_idx          = 22
+	array_type_idx         = 23
+	map_type_idx           = 24
+	chan_type_idx          = 25
+	size_t_type_idx        = 26
+	any_type_idx           = 27
+	float_literal_type_idx = 28
+	int_literal_type_idx   = 29
+	thread_type_idx        = 30
+	error_type_idx         = 31
+	u8_type_idx            = 32
 )
 
 pub const (
@@ -409,10 +409,10 @@ pub const (
 		i128_type_idx, byte_type_idx, u8_type_idx, u16_type_idx, u32_type_idx, u64_type_idx,
 		u128_type_idx, int_literal_type_idx, rune_type_idx]
 	signed_integer_type_idxs   = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx,
-		i128_type_idx,
+		i128_type_idx
 	]
 	unsigned_integer_type_idxs = [byte_type_idx, u16_type_idx, u32_type_idx, u64_type_idx,
-		u128_type_idx,
+		u128_type_idx
 	]
 	float_type_idxs            = [f32_type_idx, f64_type_idx, f128_type_idx, float_literal_type_idx]
 	number_type_idxs           = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx, i128_type_idx,
@@ -471,10 +471,10 @@ pub fn merge_types(params ...[]Type) []Type {
 
 pub const (
 	// must be in the same order as the idx consts above
-	builtin_type_names = ['void', 'voidptr', 'charptr', 'byteptr', 'i8', 'i16', 'int', 'i64', 'u16',
-		'u32', 'u64', 'int_literal', 'f32', 'f64', 'float_literal', 'string', 'char', 'byte', 'bool',
+	builtin_type_names = ['void', 'voidptr', 'charptr', 'byteptr', 'i8', 'i16', 'int', 'i64', 'i128', 'u16',
+		'u32', 'u64', 'u128','int_literal', 'f32', 'f64',  'f128', 'float_literal', 'string', 'char', 'byte', 'bool',
 		'none', 'array', 'array_fixed', 'map', 'chan', 'any', 'struct', 'mapnode', 'size_t', 'rune',
-		'thread', 'Error', 'u8', 'i128', 'u128', 'f128']
+		'thread', 'Error', 'u8']
 )
 
 pub struct MultiReturn {
