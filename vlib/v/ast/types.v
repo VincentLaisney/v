@@ -399,18 +399,24 @@ pub const (
 	thread_type_idx        = 27
 	error_type_idx         = 28
 	u8_type_idx            = 29
+	i128_type_idx          = 30
+	u128_type_idx          = 31
+	f128_type_idx          = 32
 )
 
 pub const (
 	integer_type_idxs          = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx,
-		byte_type_idx, u8_type_idx, u16_type_idx, u32_type_idx, u64_type_idx, int_literal_type_idx,
-		rune_type_idx,
+		i128_type_idx, byte_type_idx, u8_type_idx, u16_type_idx, u32_type_idx, u64_type_idx,
+		u128_type_idx, int_literal_type_idx, rune_type_idx]
+	signed_integer_type_idxs   = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx,
+		i128_type_idx,
 	]
-	signed_integer_type_idxs   = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx]
-	unsigned_integer_type_idxs = [byte_type_idx, u16_type_idx, u32_type_idx, u64_type_idx]
-	float_type_idxs            = [f32_type_idx, f64_type_idx, float_literal_type_idx]
-	number_type_idxs           = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx,
-		byte_type_idx, u16_type_idx, u32_type_idx, u64_type_idx, f32_type_idx, f64_type_idx,
+	unsigned_integer_type_idxs = [byte_type_idx, u16_type_idx, u32_type_idx, u64_type_idx,
+		u128_type_idx,
+	]
+	float_type_idxs            = [f32_type_idx, f64_type_idx, f128_type_idx, float_literal_type_idx]
+	number_type_idxs           = [i8_type_idx, i16_type_idx, int_type_idx, i64_type_idx, i128_type_idx,
+		byte_type_idx, u16_type_idx, u32_type_idx, u64_type_idx, u128_type, f32_type_idx, f64_type_idx, f128_type_idx,
 		int_literal_type_idx, float_literal_type_idx, rune_type_idx]
 	pointer_type_idxs          = [voidptr_type_idx, byteptr_type_idx, charptr_type_idx]
 	string_type_idxs           = [string_type_idx]
@@ -426,13 +432,16 @@ pub const (
 	int_type           = new_type(int_type_idx)
 	i16_type           = new_type(i16_type_idx)
 	i64_type           = new_type(i64_type_idx)
+	i128_type          = new_type(i128_type_idx)
 	byte_type          = new_type(byte_type_idx)
 	u8_type            = new_type(u8_type_idx)
 	u16_type           = new_type(u16_type_idx)
 	u32_type           = new_type(u32_type_idx)
 	u64_type           = new_type(u64_type_idx)
+	u128_type          = new_type(u128_type_idx)
 	f32_type           = new_type(f32_type_idx)
 	f64_type           = new_type(f64_type_idx)
+	f128_type          = new_type(f128_type_idx)
 	char_type          = new_type(char_type_idx)
 	bool_type          = new_type(bool_type_idx)
 	none_type          = new_type(none_type_idx)
@@ -465,7 +474,7 @@ pub const (
 	builtin_type_names = ['void', 'voidptr', 'charptr', 'byteptr', 'i8', 'i16', 'int', 'i64', 'u16',
 		'u32', 'u64', 'int_literal', 'f32', 'f64', 'float_literal', 'string', 'char', 'byte', 'bool',
 		'none', 'array', 'array_fixed', 'map', 'chan', 'any', 'struct', 'mapnode', 'size_t', 'rune',
-		'thread', 'Error', 'u8']
+		'thread', 'Error', 'u8', 'i128', 'u128', 'f128']
 )
 
 pub struct MultiReturn {
@@ -498,13 +507,16 @@ pub enum Kind {
 	i16
 	int
 	i64
+	i128
 	byte
 	u8
 	u16
 	u32
 	u64
+	u128
 	f32
 	f64
+	f128
 	char
 	size_t
 	rune
@@ -632,12 +644,15 @@ pub fn (mut t Table) register_builtin_type_symbols() {
 	t.register_type_symbol(kind: .i16, name: 'i16', cname: 'i16', mod: 'builtin')
 	t.register_type_symbol(kind: .int, name: 'int', cname: 'int', mod: 'builtin')
 	t.register_type_symbol(kind: .i64, name: 'i64', cname: 'i64', mod: 'builtin')
+	t.register_type_symbol(kind: .i128, name: 'i128', cname: 'i128', mod: 'builtin')
 	t.register_type_symbol(kind: .byte, name: 'byte', cname: 'byte', mod: 'builtin')
 	t.register_type_symbol(kind: .u16, name: 'u16', cname: 'u16', mod: 'builtin')
 	t.register_type_symbol(kind: .u32, name: 'u32', cname: 'u32', mod: 'builtin')
 	t.register_type_symbol(kind: .u64, name: 'u64', cname: 'u64', mod: 'builtin')
+	t.register_type_symbol(kind: .u128, name: 'u128', cname: 'u128', mod: 'builtin')
 	t.register_type_symbol(kind: .f32, name: 'f32', cname: 'f32', mod: 'builtin')
 	t.register_type_symbol(kind: .f64, name: 'f64', cname: 'f64', mod: 'builtin')
+	t.register_type_symbol(kind: .f128, name: 'f128', cname: 'f128', mod: 'builtin')
 	t.register_type_symbol(kind: .char, name: 'char', cname: 'char', mod: 'builtin')
 	t.register_type_symbol(kind: .bool, name: 'bool', cname: 'bool', mod: 'builtin')
 	t.register_type_symbol(kind: .none_, name: 'none', cname: 'none', mod: 'builtin')
@@ -680,7 +695,7 @@ pub fn (t &TypeSymbol) is_pointer() bool {
 
 [inline]
 pub fn (t &TypeSymbol) is_int() bool {
-	res := t.kind in [.i8, .i16, .int, .i64, .byte, .u16, .u32, .u64, .int_literal, .rune]
+	res := t.kind in [.i8, .i16, .int, .i64, .i128, .byte, .u16, .u32, .u64, .u128, .int_literal, .rune]
 	if !res && t.kind == .alias {
 		return (t.info as Alias).parent_type.is_number()
 	}
@@ -689,7 +704,7 @@ pub fn (t &TypeSymbol) is_int() bool {
 
 [inline]
 pub fn (t &TypeSymbol) is_float() bool {
-	return t.kind in [.f32, .f64, .float_literal]
+	return t.kind in [.f32, .f64, .f128, .float_literal]
 }
 
 [inline]
@@ -725,14 +740,17 @@ pub fn (k Kind) str() string {
 		.i8 { 'i8' }
 		.i16 { 'i16' }
 		.i64 { 'i64' }
+		.i128 { 'i128' }
 		.byte { 'byte' }
 		.u8 { 'u8' }
 		.u16 { 'u16' }
 		.u32 { 'u32' }
 		.u64 { 'u64' }
+		.u128 { 'u128' }
 		.int_literal { 'int_literal' }
 		.f32 { 'f32' }
 		.f64 { 'f64' }
+		.f128 { 'f128' }
 		.float_literal { 'float_literal' }
 		.string { 'string' }
 		.char { 'char' }
@@ -927,7 +945,7 @@ pub fn (t &Table) type_to_str_using_aliases(typ Type, import_aliases map[string]
 		.int_literal, .float_literal {
 			res = sym.name
 		}
-		.i8, .i16, .int, .i64, .byte, .u8, .u16, .u32, .u64, .f32, .f64, .char, .rune, .string,
+		.i8, .i16, .int, .i64, .i128, .byte, .u8, .u16, .u32, .u64, .u128, .f32, .f64, .f128, .char, .rune, .string,
 		.bool, .none_, .byteptr, .voidptr, .charptr {
 			// primitive types
 			if sym.kind == .byteptr {

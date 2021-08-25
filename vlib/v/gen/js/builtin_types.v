@@ -64,6 +64,9 @@ fn (mut g JsGen) sym_to_js_typ(sym ast.TypeSymbol) string {
 		.i64 {
 			styp = 'i64'
 		}
+		.i128 {
+			styp = 'i128'
+		}
 		.byte {
 			styp = 'byte'
 		}
@@ -76,11 +79,17 @@ fn (mut g JsGen) sym_to_js_typ(sym ast.TypeSymbol) string {
 		.u64 {
 			styp = 'u64'
 		}
+		.u128 {
+			styp = 'u128'
+		}
 		.f32 {
 			styp = 'f32'
 		}
 		.f64 {
 			styp = 'f64'
+		}
+		.f128 {
+			styp = 'f128'
 		}
 		.int_literal {
 			styp = 'int_literal'
@@ -132,7 +141,7 @@ pub fn (mut g JsGen) typ(t ast.Type) string {
 		.byteptr, .charptr {
 			styp = '${g.sym_to_js_typ(sym)}'
 		}
-		.i8, .i16, .int, .i64, .byte, .u8, .u16, .u32, .u64, .f32, .f64, .int_literal,
+		.i8, .i16, .int, .i64, .i128, .byte, .u8, .u16, .u32, .u64, .u128, .f32, .f64, .f128, .int_literal,
 		.float_literal, .size_t {
 			styp = '${g.sym_to_js_typ(sym)}'
 		}

@@ -443,6 +443,9 @@ pub fn (mut p Parser) parse_any_type(language ast.Language, is_ptr bool, check_d
 					'i64' {
 						ret = ast.i64_type
 					}
+					'i128' {
+						ret = ast.i128_type
+					}
 					'byte' {
 						ret = ast.byte_type
 					}
@@ -455,11 +458,17 @@ pub fn (mut p Parser) parse_any_type(language ast.Language, is_ptr bool, check_d
 					'u64' {
 						ret = ast.u64_type
 					}
+					'u1128' {
+						ret = ast.u128_type
+					}
 					'f32' {
 						ret = ast.f32_type
 					}
 					'f64' {
 						ret = ast.f64_type
+					}
+					'f128' {
+						ret = ast.f128_type
 					}
 					'string' {
 						ret = ast.string_type
