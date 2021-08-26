@@ -134,6 +134,101 @@ pub fn format_dec_sb(d u64, p BF_param, mut res strings.Builder) {
 	return
 }
 
+// format_dec_sb format a u64
+[direct_array_access]
+pub fn format_dec_sb_128(d u128, p BF_param, mut res strings.Builder) {
+	mut n_char := dec_digits(d)
+	sign_len := if !p.positive || p.sign_flag { 1 } else { 0 }
+	number_len := sign_len + n_char
+	dif := p.len0 - number_len
+	mut sign_written := false
+
+	if p.allign == .right {
+		if p.pad_ch == `0` {
+			if p.positive {
+				if p.sign_flag {
+					res.write_b(`+`)
+					sign_written = true
+				}
+			} else {
+				res.write_b(`-`)
+				sign_written = true
+			}
+		}
+		// write the pad chars
+		for i1 := 0; i1 < dif; i1++ {
+			res.write_b(p.pad_ch)
+		}
+	}
+
+	if !sign_written {
+		// no pad char, write the sign before the number
+		if p.positive {
+			if p.sign_flag {
+				res.write_b(`+`)
+			}
+		} else {
+			res.write_b(`-`)
+		}
+	}
+
+	/*
+	// Legacy version
+	// max u64 18446744073709551615 => 20 byte
+	mut buf := [32]byte{}
+	mut i := 20
+	mut d1 := d
+	for i >= (21 - n_char) {
+		buf[i] = byte(d1 % 10) + `0`
+		d1 = d1 / 10
+		i--
+	}
+	i++
+	*/
+
+	//===========================================
+	// Speed version
+	// max i64 170141183460469231731687303715884105727 => 39 byte
+	mut buf := [48]byte{}
+	mut i := 39
+	mut n := d
+	mut d_i := u128(0)
+	if n > u128(0) {
+		for n > u128(0) {
+			n1 := n / u128(100)
+			// calculate the digit_pairs start index
+			d_i = (n - (n1 * u128(100))) << 1
+			n = n1
+			unsafe {
+				buf[i] = strconv.digit_pairs.str[d_i]
+			}
+			i--
+			d_i++
+			unsafe {
+				buf[i] = strconv.digit_pairs.str[d_i]
+			}
+			i--
+		}
+		i++
+		// remove head zero
+		if d_i < u128(20) {
+			i++
+		}
+		unsafe { res.write_ptr(&buf[i], n_char) }
+	} else {
+		// we have a zero no need of more code!
+		res.write_b(`0`)
+	}
+	//===========================================
+
+	if p.allign == .left {
+		for i1 := 0; i1 < dif; i1++ {
+			res.write_b(p.pad_ch)
+		}
+	}
+	return
+}
+
 [direct_array_access; manualfree]
 pub fn f64_to_str_lnd1(f f64, dec_digit int) string {
 	unsafe {

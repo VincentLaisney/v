@@ -239,6 +239,90 @@ pub fn (nn u64) str() string {
 	}
 }
 
+// str returns the value of the `i64` as a `string`.
+// Example: assert i64(-200000).str() == '-200000'
+[direct_array_access; inline]
+pub fn (nn i128) str() string {
+	unsafe {
+		mut n := nn
+		mut d := i128(0)
+		if n == 0 {
+			return '0'
+		}
+		max := 39
+		mut buf := malloc_noscan(max + 1)
+		mut is_neg := false
+		if n < 0 {
+			n = -n
+			is_neg = true
+		}
+		mut index := max
+		buf[index] = 0
+		index--
+		for n > 0 {
+			n1 := n / i128(100)
+			d = ((n - (n1 * i128(100))) << i128(1))
+			n = n1
+			buf[index] = digit_pairs[d]
+			index--
+			d++
+			buf[index] = digit_pairs[d]
+			index--
+		}
+		index++
+		// remove head zero
+		if d < i128(20) {
+			index++
+		}
+		// Prepend - if it's negative
+		if is_neg {
+			index--
+			buf[index] = `-`
+		}
+		diff := max - index
+		vmemmove(buf, buf + index, diff + 1)
+		return tos(buf, diff)
+		// return tos(memdup(&buf[0] + index, (max - index)), (max - index))
+	}
+}
+
+// str returns the value of the `u64` as a `string`.
+// Example: assert u64(2000000).str() == '2000000'
+[direct_array_access; inline]
+pub fn (nn u128) str() string {
+	unsafe {
+		mut n := nn
+		mut d := u128(0)
+		if n == u128(0) {
+			return '0'
+		}
+		max := 39 // 128 / log2(10)
+		mut buf := malloc_noscan(max + 1)
+		mut index := max
+		buf[index] = 0
+		index--
+		for n > u128(0) {
+			n1 := n / u128(100)
+			d = (n - (n1 * u128(100))) << u128(1)
+			n = n1
+			buf[index] = digit_pairs[d]
+			index--
+			d++
+			buf[index] = digit_pairs[d]
+			index--
+		}
+		index++
+		// remove head zero
+		if d < u128(20) {
+			index++
+		}
+		diff := max - index
+		vmemmove(buf, buf + index, diff + 1)
+		return tos(buf, diff)
+		// return tos(memdup(&buf[0] + index, (max - index)), (max - index))
+	}
+}
+
 // str returns the value of the `bool` as a `string`.
 // Example: assert (2 > 1).str() == 'true'
 pub fn (b bool) str() string {

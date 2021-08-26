@@ -25,12 +25,17 @@ pub enum StrIntpType {
 	si_i32
 	si_u64
 	si_i64
+	si_u128
+	si_i128
 	si_e32
 	si_e64
+	si_e128
 	si_f32
 	si_f64
+	si_f128
 	si_g32
 	si_g64
+	si_g128
 	si_s
 	si_p
 	si_vp
@@ -48,12 +53,17 @@ pub fn (x StrIntpType) str() string {
 		.si_i32 { return 'i32' }
 		.si_u64 { return 'u64' }
 		.si_i64 { return 'i64' }
+		.si_u128 { return 'u128' }
+		.si_i128 { return 'i128' }
 		.si_f32 { return 'f32' }
 		.si_f64 { return 'f64' }
+		.si_f128 { return 'f128' }
 		.si_g32 { return 'f32' } // g32 format use f32 data
 		.si_g64 { return 'f64' } // g64 format use f64 data
+		.si_g128 { return 'f128' } // g128 format use f128 data
 		.si_e32 { return 'f32' } // e32 format use f32 data
 		.si_e64 { return 'f64' } // e64 format use f64 data
+		.si_e128 { return 'f128' } // e128 format use f128 data
 		.si_s { return 's' }
 		.si_p { return 'p' }
 		.si_vp { return 'vp' }
@@ -74,8 +84,11 @@ pub mut:
 	d_i32 int
 	d_u64 u64
 	d_i64 i64
+	d_u128 u128
+	d_i128 i128
 	d_f32 f32
 	d_f64 f64
+	d_f128 f128
 	d_s   string
 	d_p   voidptr
 	d_vp  voidptr
@@ -230,14 +243,16 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 		}
 
 		// signed int
-		if typ in [.si_i8, .si_i16, .si_i32, .si_i64] {
-			mut d := data.d.d_i64
+		if typ in [.si_i8, .si_i16, .si_i32, .si_i64, .si_i128] {
+			mut d := data.d.d_i128
 			if typ == .si_i8 {
-				d = i64(data.d.d_i8)
+				d = i128(data.d.d_i8)
 			} else if typ == .si_i16 {
-				d = i64(data.d.d_i16)
+				d = i128(data.d.d_i16)
 			} else if typ == .si_i32 {
-				d = i64(data.d.d_i32)
+				d = i128(data.d.d_i32)
+			} else if typ == .si_i128 {
+				d = i128(data.d.d_i128)
 			}
 
 			if base == 0 {
@@ -250,7 +265,7 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 				if d < 0 {
 					bf.positive = false
 				}
-				strconv.format_dec_sb(abs64(d), bf, mut sb)
+				strconv.format_dec_sb_128(abs128(d), bf, mut sb)
 			} else {
 				mut hx := strconv.format_int(d, base)
 				if upper_case {
@@ -269,7 +284,7 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 		}
 
 		// unsigned int and pointers
-		if typ in [.si_u8, .si_u16, .si_u32, .si_u64] {
+		if typ in [.si_u8, .si_u16, .si_u32, .si_u64, .si_u128] {
 			mut d := data.d.d_u64
 			if typ == .si_u8 {
 				d = u64(data.d.d_u8)
@@ -277,6 +292,8 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 				d = u64(data.d.d_u16)
 			} else if typ == .si_u32 {
 				d = u64(data.d.d_u32)
+			} else if typ == .si_u128 {
+				d = u128(data.d.d_u128)
 			}
 			if base == 0 {
 				if width == 0 {
@@ -403,6 +420,7 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 					f.free()
 				}
 			}
+			.si_f128 { sb.write_string('Format from f128 not yet done!') }
 			.si_g32 {
 				// println("HERE: g32")
 				if use_default_str {
@@ -539,6 +557,7 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 					f.free()
 				}
 			}
+			.si_g128 { sb.write_string('Format g128 not yet done!') }
 			.si_e32 {
 				// println("HERE: e32")
 				bf.len1 = 6
@@ -591,6 +610,7 @@ fn (data StrIntpData) get_fmt_format(mut sb strings.Builder) {
 					f.free()
 				}
 			}
+			.si_e128 { sb.write_string('Format e128 not yet done!') }
 			// runes
 			.si_c {
 				ss := utf32_to_str(data.d.d_c)

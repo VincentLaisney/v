@@ -3,8 +3,8 @@
 //}
 
 pub fn main() {
-	a := u128(1)
-	b := u128(2)
+	a := u128(0xffffffffffff)
+	b := u128(2938475)
 	c := a + b
-//	println(c)
+	println('$a + $b = $c')
 }
