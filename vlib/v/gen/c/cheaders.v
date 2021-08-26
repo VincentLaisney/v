@@ -514,7 +514,7 @@ typedef uint8_t byte;
 typedef uint32_t rune;
 typedef float f32;
 typedef double f64;
-typedef _int128 i128;
+typedef __int128 i128;
 typedef unsigned __int128 u128;
 typedef __float128 f128;
 typedef int64_t int_literal;
