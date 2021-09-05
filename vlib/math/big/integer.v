@@ -374,6 +374,120 @@ pub fn (integer Integer) div_mod(divisor Integer) (Integer, Integer) {
 	return quotient, remainder
 }
 
+pub fn (integer Integer) div_mod_1_v(divisor Integer) (Integer, Integer) {
+	// Quick exits
+	if divisor.signum == 0 {
+		panic('Cannot divide by zero')
+	}
+	if integer.signum == 0 {
+		return zero_int, zero_int
+	}
+	if divisor == one_int {
+		return integer, zero_int
+	}
+	if divisor.signum == -1 {
+		q, r := integer.div_mod_1_v(divisor.neg())
+		return q.neg(), r
+	}
+	if integer.signum == -1 {
+		q, r := integer.neg().div_mod_1_v(divisor)
+		if r.signum == 0 {
+			return q.neg(), zero_int
+		} else {
+			return q.neg() - one_int, divisor - r
+		}
+	}
+	// Division for positive integers
+	mut q := []u32{cap: integer.digits.len - divisor.digits.len + 1}
+	mut r := []u32{cap: integer.digits.len}
+	divide_digit_array_1_v(integer.digits, divisor.digits, mut q, mut r)
+	quotient := Integer{
+		signum: if q.len == 0 { 0 } else { 1 }
+		digits: q
+	}
+	remainder := Integer{
+		signum: if r.len == 0 { 0 } else { 1 }
+		digits: r
+	}
+	return quotient, remainder
+}
+
+pub fn (integer Integer) div_mod_binary(divisor Integer) (Integer, Integer) {
+	// Quick exits
+	if divisor.signum == 0 {
+		panic('Cannot divide by zero')
+	}
+	if integer.signum == 0 {
+		return zero_int, zero_int
+	}
+	if divisor == one_int {
+		return integer, zero_int
+	}
+	if divisor.signum == -1 {
+		q, r := integer.div_mod_binary(divisor.neg())
+		return q.neg(), r
+	}
+	if integer.signum == -1 {
+		q, r := integer.neg().div_mod_binary(divisor)
+		if r.signum == 0 {
+			return q.neg(), zero_int
+		} else {
+			return q.neg() - one_int, divisor - r
+		}
+	}
+	// Division for positive integers
+	mut q := []u32{cap: integer.digits.len - divisor.digits.len + 1}
+	mut r := []u32{cap: integer.digits.len}
+	divide_digit_array_binary(integer.digits, divisor.digits, mut q, mut r)
+	quotient := Integer{
+		signum: if q.len == 0 { 0 } else { 1 }
+		digits: q
+	}
+	remainder := Integer{
+		signum: if r.len == 0 { 0 } else { 1 }
+		digits: r
+	}
+	return quotient, remainder
+}
+
+pub fn (integer Integer) div_mod_newton(divisor Integer) (Integer, Integer) {
+	// Quick exits
+	if divisor.signum == 0 {
+		panic('Cannot divide by zero')
+	}
+	if integer.signum == 0 {
+		return zero_int, zero_int
+	}
+	if divisor == one_int {
+		return integer, zero_int
+	}
+	if divisor.signum == -1 {
+		q, r := integer.div_mod_newton(divisor.neg())
+		return q.neg(), r
+	}
+	if integer.signum == -1 {
+		q, r := integer.neg().div_mod_newton(divisor)
+		if r.signum == 0 {
+			return q.neg(), zero_int
+		} else {
+			return q.neg() - one_int, divisor - r
+		}
+	}
+	// Division for positive integers
+	mut q := []u32{cap: integer.digits.len - divisor.digits.len + 1}
+	mut r := []u32{cap: integer.digits.len}
+	divide_digit_array_newton(integer.digits, divisor.digits, mut q, mut r)
+	quotient := Integer{
+		signum: if q.len == 0 { 0 } else { 1 }
+		digits: q
+	}
+	remainder := Integer{
+		signum: if r.len == 0 { 0 } else { 1 }
+		digits: r
+	}
+	return quotient, remainder
+}
+
 pub fn (a Integer) / (b Integer) Integer {
 	q, _ := a.div_mod(b)
 	return q

@@ -201,6 +201,111 @@ fn divide_digit_array(operand_a []u32, operand_b []u32, mut quotient []u32, mut 
 	}
 }
 
+// Divides the non-negative integer in a by non-negative integer b and store the two results
+// in quotient and remainder respectively. It is different from the rest of the functions
+// because it assumes that quotient and remainder are empty zero length arrays. They can be
+// made to have appropriate capacity though
+fn divide_digit_array_1_v(operand_a []u32, operand_b []u32, mut quotient []u32, mut remainder []u32) {
+	cmp_result := compare_digit_array(operand_a, operand_b)
+	// a == b => q, r = 1, 0
+	if cmp_result == 0 {
+		quotient << 1
+		for quotient.len > 1 {
+			quotient.delete_last()
+		}
+		for remainder.len > 0 {
+			remainder.delete_last()
+		}
+		return
+	}
+
+	// a < b => q, r = 0, a
+	if cmp_result < 0 {
+		for quotient.len > 0 {
+			quotient.delete_last()
+		}
+		for index in 0 .. operand_a.len {
+			remainder << operand_a[index]
+		}
+		return
+	}
+	if operand_b.len == 1 {
+		divide_array_by_digit(operand_a, operand_b[0], mut quotient, mut remainder)
+	} else {
+		divide_array_by_array_1_v(operand_a, operand_b, mut quotient, mut remainder)
+	}
+}
+
+// Divides the non-negative integer in a by non-negative integer b and store the two results
+// in quotient and remainder respectively. It is different from the rest of the functions
+// because it assumes that quotient and remainder are empty zero length arrays. They can be
+// made to have appropriate capacity though
+fn divide_digit_array_binary(operand_a []u32, operand_b []u32, mut quotient []u32, mut remainder []u32) {
+	cmp_result := compare_digit_array(operand_a, operand_b)
+	// a == b => q, r = 1, 0
+	if cmp_result == 0 {
+		quotient << 1
+		for quotient.len > 1 {
+			quotient.delete_last()
+		}
+		for remainder.len > 0 {
+			remainder.delete_last()
+		}
+		return
+	}
+
+	// a < b => q, r = 0, a
+	if cmp_result < 0 {
+		for quotient.len > 0 {
+			quotient.delete_last()
+		}
+		for index in 0 .. operand_a.len {
+			remainder << operand_a[index]
+		}
+		return
+	}
+	if operand_b.len == 1 {
+		divide_array_by_digit(operand_a, operand_b[0], mut quotient, mut remainder)
+	} else {
+		divide_array_by_array_binary(operand_a, operand_b, mut quotient, mut remainder)
+	}
+}
+
+// Divides the non-negative integer in a by non-negative integer b and store the two results
+// in quotient and remainder respectively. It is different from the rest of the functions
+// because it assumes that quotient and remainder are empty zero length arrays. They can be
+// made to have appropriate capacity though
+fn divide_digit_array_newton(operand_a []u32, operand_b []u32, mut quotient []u32, mut remainder []u32) {
+	cmp_result := compare_digit_array(operand_a, operand_b)
+	// a == b => q, r = 1, 0
+	if cmp_result == 0 {
+		quotient << 1
+		for quotient.len > 1 {
+			quotient.delete_last()
+		}
+		for remainder.len > 0 {
+			remainder.delete_last()
+		}
+		return
+	}
+
+	// a < b => q, r = 0, a
+	if cmp_result < 0 {
+		for quotient.len > 0 {
+			quotient.delete_last()
+		}
+		for index in 0 .. operand_a.len {
+			remainder << operand_a[index]
+		}
+		return
+	}
+	if operand_b.len == 1 {
+		divide_array_by_digit(operand_a, operand_b[0], mut quotient, mut remainder)
+	} else {
+		divide_array_by_array_newton(operand_a, operand_b, mut quotient, mut remainder)
+	}
+}
+
 // Performs division on the non-negative dividend in a by the single digit divisor b. It assumes
 // quotient and remainder are empty zero length arrays without previous allocation
 fn divide_array_by_digit(operand_a []u32, divisor u32, mut quotient []u32, mut remainder []u32) {
@@ -235,6 +340,56 @@ fn divide_array_by_digit(operand_a []u32, divisor u32, mut quotient []u32, mut r
 		quotient.delete_last()
 	}
 	remainder << u32(rem)
+	for remainder.len > 0 && remainder.last() == 0 {
+		remainder.delete_last()
+	}
+}
+
+// Performs division on the non-negative dividend in a by the multi digit divisor b. It assumes
+// quotient and remainder are empty zero length arrays without allocation
+fn divide_array_by_array_1_v(operand_a []u32, operand_b []u32, mut quotient []u32, mut remainder []u32) {
+	for index in 0 .. operand_a.len {
+		remainder << operand_a[index]
+	}
+	for _ in 0 .. operand_b.len {
+		quotient << 0
+	}
+	offset := operand_a.len - operand_b.len
+	divisor_last_index := operand_b.len - 1
+	for index := offset; index >= 0; index-- {
+		dividend_last_index := divisor_last_index + index
+		value_upper := if remainder.len > dividend_last_index + 1 {
+			u64(remainder[dividend_last_index + 1])
+		} else {
+			u64(0)
+		}
+		value_lower := if remainder.len > dividend_last_index {
+			u64(remainder[dividend_last_index])
+		} else {
+			u64(0)
+		}
+		partial := value_lower + (value_upper << 32)
+		mut q := u32(partial / operand_b[divisor_last_index])
+		if q > 0 {
+			mut modified_divisor := []u32{len: operand_b.len + index, init: 0}
+			for i in 0 .. operand_b.len {
+				modified_divisor[index + i] = operand_b[i]
+			}
+
+			mut product := []u32{len: operand_b.len + 1, init: 0}
+			multiply_array_by_digit(modified_divisor, q, mut product)
+			for q > 0 && compare_digit_array(product, remainder) > 0 {
+				q--
+				subtract_digit_array(product, modified_divisor, mut product)
+			}
+			subtract_digit_array(remainder, product, mut remainder)
+		}
+		quotient[index] = q
+	}
+	// Remove leading zeros from quotient and remainder
+	for quotient.len > 0 && quotient.last() == 0 {
+		quotient.delete_last()
+	}
 	for remainder.len > 0 && remainder.last() == 0 {
 		remainder.delete_last()
 	}
